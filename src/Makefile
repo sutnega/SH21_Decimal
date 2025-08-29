@@ -1,0 +1,50 @@
+CC = gcc
+CFLAGS = -std=c11 -Wall -Wextra -Werror -fPIC
+GCOVFLAGS = -fprofile-arcs -ftest-coverage
+
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+LIB = s21_decimal.a
+
+TEST_SRCS = $(wildcard tests/*.c)
+TEST_BIN = test_s21
+
+.PHONY: all clean test test_run s21_decimal.a gcov_report cppcheck
+
+all: $(LIB) 
+
+# Создание статической библиотеки без префикса lib
+$(LIB): $(OBJS)
+	ar rcs $@ $^
+
+# Компиляция объектных файлов
+%.o: %.c s21_decimal.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+test: $(LIB) $(TEST_SRCS)
+	$(CC) $(CFLAGS) $(TEST_SRCS) $(LIB) -o $(TEST_BIN) -lcheck -lsubunit -lm -lpthread
+
+# Запуск тестов
+test_run: test
+	./$(TEST_BIN)
+
+# Очистка сгенерированных файлов
+clean:
+	rm -f $(OBJS) $(LIB) $(TEST_BIN) *.gcda *.gcno *.info
+	rm -rf coverage_report
+
+# Сборка с флагами gcov, запуск тестов и генерация отчёта покрытия в html
+gcov_report: clean test
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $(SRCS) $(TEST_SRCS) -o $(TEST_BIN) -lcheck -lsubunit -lm -lpthread
+	./test_s21
+	lcov --capture --directory . --output-file coverage.info
+	genhtml coverage.info --output-directory coverage_report
+	open coverage_report/index.html
+
+cppcheck:
+	@cppcheck --enable=all --inconclusive --std=c11 --language=c --suppress=missingIncludeSystem --quiet . tests/
+
+valgrind:
+	valgrind --tool=memcheck --leak-check=yes -s ./s21_decimal.a
+
+rebuild: clean test

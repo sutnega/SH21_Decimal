@@ -1,0 +1,3 @@
+#include <check.h>
+
+#include "../s21_decimal.h"

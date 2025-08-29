@@ -1,0 +1,110 @@
+#suite s21_from_float_to_decimal
+
+#test s21_float_1
+  float inp = 1. / 0.;
+  s21_decimal out;
+  int error = s21_from_float_to_decimal(inp, &out);
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], 0);
+  ck_assert_int_eq(error, 1);
+
+#test s21_float_2
+  float inp = 2;
+  s21_decimal out = {{0, 0, 0, 0}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{2000000, 0, 0, 393216}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_3
+  float inp = -321.2;
+  s21_decimal out = {{0, 0, 0, 0}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{3212000, 0, 0, -2147221504}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_4
+  float inp = 321.2;
+  s21_decimal out = {{0, 0, 0, 0}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{3212000, 0, 0, 262144}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_5
+  float inp = 321213153.8323;
+  s21_decimal out = {{0, 0, 0, 0}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{321213200, 0x00000000, 0x00000000, 0x00000000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_6
+  float inp = 9732131234575756436473.323123474;
+  s21_decimal out = {{3211, 123145, 231, 312441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{-953974784, -1804407435, 0x0000020F, 0x00000000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_7
+  float inp = 73.329959999;
+  s21_decimal out = {{3211, 123145, 231, 312441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{7332996, 0, 0, 327680}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_8
+  float inp = 0.003;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x002DC6C0, 0x00000000, 0x00000000, 0x00090000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_9
+  float inp = 0.00312345;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x002FA8FA, 0x00000000, 0x00000000, 0x00090000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_10
+  float inp = 0.00000003123959595945;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x002FAAF8, 0x00000000, 0x00000000, 0x000E0000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_11
+  float inp = 0.0000000000000000093929383838292;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x008F532B, 0x00000000, 0x00000000, 0x00180000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_12
+  float inp = 0.00000000000000000000000000013929383838292;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x00000001, 0x00000000, 0x00000000, 0x001C0000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_13
+  float inp = 0.00000000000000000000000000016929383838292;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  s21_decimal res = {{0x00000002, 0, 0, 0x001C0000}};
+  for (int i = 0; i < 4; i++) ck_assert_int_eq(out.bits[i], res.bits[i]);
+  ck_assert_int_eq(error, 0);
+
+#test s21_float_14
+  float inp = .00000000000000000000000000000000193929383838292;
+  s21_decimal out = {{32131, 1231435, 2311, 3121441}};
+  int error = s21_from_float_to_decimal(inp, &out);
+  ck_assert_int_eq(error, 1);

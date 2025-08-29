@@ -10,7 +10,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     if (s21_is_zero_dec(value_2)) {  //(ERROR_ZERO_DIV | нужен обрабочик
                                      // ретерн-ошибок ??? не нужен
       status = ERROR_ZERO_DIV;
-    } else {
+    }
     if (s21_is_zero_dec(value_1)) {  // если делитель 0
       s21_big_decimal zero = s21_new_decimal();
       s21_set_sign(&zero, 0);
@@ -18,7 +18,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       *result = s21_to_dec(zero);
       status = OK;
     }
-     else { 
+
     s21_big_decimal big_value_1 = s21_to_big(value_1);
     s21_big_decimal big_value_2 = s21_to_big(value_2);
 
@@ -66,8 +66,6 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       if (s21_is_zero(quotient)) s21_set_sign(&quotient, 0);
       *result = s21_to_dec(quotient);
     }
-  }
-}
   }
   return status;
 }

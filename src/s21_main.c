@@ -91,30 +91,20 @@ int s21_increase_scale(s21_big_decimal *value, int shift) {
 int s21_decrease_scale(s21_big_decimal *value, int shift) {
   int status = OK;
   int scale = s21_get_scale(*value);
-  if (scale - shift < 0) {
-    status = ERROR_UNDERFLOW;
-  } else {
-    s21_decimal val = s21_to_dec(*value);
-
-    s21_decimal divisor = s21_to_dec(s21_pow10(shift));  // Делитель 10^шифт
-    s21_decimal result;
-    status = s21_div(val, divisor, &result);
-
-    if (status == OK) {
-      s21_decimal check;
-      s21_mul(result, divisor, &check);  // тестим потери точности умножением
-
-      if (!s21_is_equal(val, check)) {
-        status = ERROR_UNDERFLOW;
-      } else {
-        *value = s21_to_big(result);  // стандарт
-        s21_set_scale(value, scale - shift);
-        s21_set_sign(value, s21_get_sign(*value));
-      }
+  s21_decimal buf = s21_to_dec(*value);
+  buf.bits[3] = s21_get_sign(*value) ? 0x801C0000 : 0x001C0000;
+  if (scale - shift >= 0 && !s21_div(buf, s21_to_dec(s21_pow10(shift)), &buf)) {
+    if (s21_is_zero_big_dec(s21_to_big(buf)))
+      status = ERROR_UNDERFLOW;
+    else {
+      *value = s21_to_big(buf);
+      s21_set_scale(value, scale - shift);
     }
-  }
+  }  // else
+  //   status = ERROR_OVERFLOW;
   return status;
 }
+
 
 int s21_mul10(s21_big_decimal *value, int mode) {
   int status = OK;
